@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid Flaw Detection System</title>
+    <style>
+        :root {
+            --primary: #2A2356;
+            --secondary: #4A90E2;
+            --accent: #00C7B5;
+            --text: #F0F4F8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--primary);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1A1A2E 100%);
+            padding: 1rem;
+            text-align: right;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .creator {
+            color: var(--accent);
+            animation: fadeIn 2s;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: radial-gradient(circle at center, var(--secondary) 0%, var(--primary) 70%);
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+            animation: slideIn 1.5s ease-out;
+        }
+
+        .model-container {
+            width: 800px;
+            height: 500px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            margin: 2rem auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .sensor-ray {
+            position: absolute;
+            width: 4px;
+            background: var(--accent);
+            height: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: height 1s ease;
+        }
+
+        .ultrasonic-pulse {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--secondary);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .control-panel {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 30px;
+            color: var(--primary);
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .info-section {
+            padding: 4rem 2rem;
+            background: rgba(255,255,255,0.05);
+            margin: 4rem 0;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 1rem;
+            backdrop-filter: blur(5px);
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 1s ease;
+        }
+
+        .card.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .results {
+            text-align: center;
+            font-size: 1.2rem;
+            min-height: 100px;
+            padding: 2rem;
+        }
+
+        @keyframes rayScan {
+            0% { height: 0; }
+            100% { height: 80%; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="creator">Created by Lucky</div>
+    </div>
+
+    <section class="hero">
+        <h1>Hybrid Flaw Detection System</h1>
+        <p>Combining Optical Fiber & Ultrasonic Technologies</p>
+        
+        <div class="model-container">
+            <div class="sensor-ray" id="mainRay"></div>
+            <div id="pulseContainer"></div>
+        </div>
+        
+        <div class="control-panel">
+            <button onclick="startDetection('ultrasonic')">Ultrasonic Scan</button>
+            <button onclick="startDetection('optical')">Optical Scan</button>
+            <button onclick="startDetection('hybrid')">Hybrid Scan</button>
+        </div>
+        
+        <div class="results" id="results"></div>
+    </section>
+
+    <section class="info-section">
+        <div class="card">
+            <h2>Project Overview</h2>
+            <p>This hybrid system combines optical fiber sensing with ultrasonic testing to detect material flaws with unprecedented accuracy. The system uses:</p>
+            <ul>
+                <li>Fiber Bragg Grating (FBG) sensors</li>
+                <li>Ultrasonic pulse-echo technique</li>
+                <li>Multi-spectral analysis</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Working Principle</h2>
+            <p>The system operates in 3 phases:</p>
+            <ol>
+                <li>Ultrasonic pulse generation (5-10 MHz)</li>
+                <li>Optical phase detection (1550nm wavelength)</li>
+                <li>Data fusion and analysis</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h2>Technical Specifications</h2>
+            <table>
+                <tr><th>Parameter</th><th>Optical</th><th>Ultrasonic</th></tr>
+                <tr><td>Resolution</td><td>±0.1μm</td><td>±0.5mm</td></tr>
+                <tr><td>Range</td><td>100m</td><td>5m</td></tr>
+                <tr><td>Frequency</td><td>193THz</td><td>5MHz</td></tr>
+            </table>
+        </div>
+    </section>
+
+    <script>
+        function startDetection(mode) {
+            const ray = document.getElementById('mainRay');
+            const results = document.getElementById('results');
+            
+            // Reset animations
+            ray.style.animation = 'none';
+            ray.offsetHeight; // Trigger reflow
+            ray.style.animation = 'rayScan 2s forwards';
+
+            // Generate pulses
+            const container = document.getElementById('pulseContainer');
+            container.innerHTML = '';
+            
+            for(let i = 0; i < 5; i++) {
+                const pulse = document.createElement('div');
+                pulse.className = 'ultrasonic-pulse';
+                pulse.style.left = ${45 + Math.random() * 10}%;
+                pulse.style.top = ${20 + i * 15}%;
+                pulse.style.animation = pulse 1s ${i * 0.2}s;
+                container.appendChild(pulse);
+            }
+
+            // Show results
+            setTimeout(() => {
+                const flaws = Math.floor(Math.random() * 5);
+                const resolution = mode === 'optical' ? '0.1μm' : '0.5mm';
+                results.innerHTML = `
+                    <h3>Scan Results (${mode.toUpperCase()})</h3>
+                    <p>Detected Flaws: ${flaws}</p>
+                    <p>Resolution: ${resolution}</p>
+                    <p>Scan Depth: ${mode === 'hybrid' ? '5.2m' : '3.8m'}</p>
+                `;
+            }, 2000);
+        }
+
+        // Scroll animations
+        const cards = document.querySelectorAll('.card');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        cards.forEach(card => observer.observe(card));
+    </script>
+</body>
+</html>
